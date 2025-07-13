@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*
+.DS_Store
+.vscode/
+.idea/
+*.sqlite3
+swipes.json
+*.log
+report_images/
+report_logs/
+.ipynb_checkpoints/
+ml-latest-small/

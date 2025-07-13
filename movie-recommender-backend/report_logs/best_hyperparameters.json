@@ -1,0 +1,7 @@
+{
+  "best_params": {
+    "n_factors": 100,
+    "reg_all": 0.05
+  },
+  "best_score_rmse": 0.8744201853924244
+}

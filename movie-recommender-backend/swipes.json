@@ -1,0 +1,20 @@
+{
+  "1": [
+    {
+      "movie_title": "Culture High, The (2014)",
+      "action": "dislike"
+    },
+    {
+      "movie_title": "Volcano (1997)",
+      "action": "like"
+    },
+    {
+      "movie_title": "Run (1991)",
+      "action": "like"
+    },
+    {
+      "movie_title": "In Hell (2003)",
+      "action": "dislike"
+    }
+  ]
+}
