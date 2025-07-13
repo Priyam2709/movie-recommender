@@ -1,241 +1,136 @@
+# 🎬 Movie Recommender System (Swipe-based)
 
-# 🎬 AI-Powered Movie Recommender
+An interactive Movie Recommendation System powered by **Content-Based Filtering (TF-IDF + Cosine Similarity)** and **Collaborative Filtering (SVD++)**, with a fun **swipe-based UI** built in **React (Framer Motion)** and a **FastAPI backend**.
 
-An AI-based movie recommendation system with a swipe interface built using **React + FastAPI**. Users swipe to like/dislike movies, and the system dynamically learns preferences to provide personalized recommendations using a hybrid of **Collaborative Filtering (SVD++)** and **Content-Based Filtering (TF-IDF + Cosine Similarity)**.
+---
 
-![screenshot](https://via.placeholder.com/800x450.png?text=Demo+Screenshot)
-
-## 🚀 Features
-
-✅ Swipe left (dislike) / right (like)  
-✅ Personalized recommendations based on user swipes  
-✅ Real-time recommendations using SVD++ and genre-tag similarity  
-✅ Posters and year fetched using TMDb API  
-✅ Reset user history  
-✅ Works locally without login  
-✅ Clean, mobile-friendly UI
-
-## 🛠️ Tech Stack
-
-| Layer      | Technology            |
-|-----------|------------------------|
-| Frontend  | React, Tailwind CSS, Framer Motion |
-| Backend   | FastAPI, Python        |
-| ML Models | Surprise SVD++, TF-IDF |
-| Data      | MovieLens `ml-latest-small` |
-| API       | [TMDb](https://www.themoviedb.org/documentation/api) for movie posters |
-
-## 🧠 Recommendation Engine
-
-### 🎯 Hybrid Model
-
-1. **Content-Based Filtering**  
-   - Uses `genres + tags` processed via `TfidfVectorizer`  
-   - Computes movie similarity using cosine similarity
-
-2. **Collaborative Filtering**  
-   - Uses `SVD++` from `surprise` library  
-   - Predicts personalized rating estimates per user
-
-3. **Fusion**  
-   - For each liked movie → get top 5 similar movies  
-   - Predict ratings for those using SVD++  
-   - Return top 10 predicted movies
-
-## 📁 Folder Structure
+## 📂 Project Structure
 
 ```
-movie-recommender/
+A/
+├── movie-recommender-backend/
+│   ├── ml-latest-small/       # Datasets (ratings, movies, tags)
+│   ├── main.py                # FastAPI Backend API
+│   ├── recommender_model.py   # Recommendation Models (TF-IDF, Cosine, SVD++)
+│   ├── analysis_and_report.py # Data Analysis, Visualization, Reporting Script
+│   ├── report_images/         # Generated Graphs and Charts
+│   ├── report_logs/           # Logs of Model Evaluation
+│   ├── swipes.json            # Stored User Swipe History
+│   └── requirements.txt       # Python Dependencies
 │
-├── movie-swipe-framer(frontend)/                     # React Frontend
-│   ├── public/
+├── movie-recommender-frontend/
 │   ├── src/
-│   │   └── MovieSwipe.js         # Main UI Component
-│   └── ...
-│
-├── movie-recommender-backend(backend)/                      # FastAPI Backend
-│   ├── main.py                   # FastAPI server
-│   ├── recommender_model.py      # ML recommendation engine
-│   ├── swipes.json               # Swipe history storage
-│   └── ml-latest-small/          # MovieLens dataset
-│       ├── movies.csv
-│       ├── ratings.csv
-│       └── tags.csv
+│   │   ├── App.js             # React Entry
+│   │   ├── MovieSwipe.js      # Swipe UI (Framer Motion)
+│   ├── package.json           # React Dependencies
+│   ├── tailwind.config.js     # TailwindCSS Config
+│   └── ...etc
 ```
 
-## 🧪 Setup Instructions
+---
 
-### 1. 📦 Backend Setup (Python 3.10 recommended)
+## 🛠️ Features
+
+✅ Swipe left (dislike) / right (like)
+✅ Auto-updating recommendations
+✅ Saved user swipe history
+✅ Reset history button
+✅ Fallback recommendations if history is empty
+✅ TMDb Poster Integration
+✅ Interactive Data Analysis with saved visual reports
+✅ FastAPI + React integration
+✅ Ready for GitHub deployment
+
+---
+
+## 🔍 Key Components (as per academic/project requirements)
+
+| Requirement               | Status                                                              |
+| ------------------------- | ------------------------------------------------------------------- |
+| **Data Visualization**    | ✅ `analysis_and_report.py` + `report_images/`                       |
+| **Feature Analysis**      | ✅ Genres, Tags via TF-IDF                                           |
+| **Model Building**        | ✅ SVD++ (Collaborative), TF-IDF + Cosine Similarity (Content-based) |
+| **Hyperparameter Tuning** | ✅ In `analysis_and_report.py`                                       |
+| **Model Comparison**      | ✅ SVD vs KNN vs Random Baseline                                     |
+| **Deployment**            | ✅ FastAPI (Backend), React (Frontend)                               |
+
+---
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone the Repo
 
 ```bash
-cd movie-recommender-backend
+git clone https://github.com/yourusername/movie-recommender.git
+cd A/movie-recommender-backend
+```
 
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate  # On Windows
+### 2️⃣ Backend Setup
 
-# Install dependencies
+```bash
+# Activate your Python environment
 pip install -r requirements.txt
-```
 
-If you don’t have `requirements.txt`, use:
-
-```bash
-pip install fastapi uvicorn pandas scikit-learn scikit-surprise requests
-```
-
-### 2. ✅ Run Backend
-
-```bash
+# Run backend
 uvicorn main:app --reload
 ```
 
-Backend runs at: `http://127.0.0.1:8000`
+---
 
-### 3. 💻 Frontend Setup
+### 3️⃣ Frontend Setup
 
 ```bash
-cd movie-swipe-framer
+cd ../movie-recommender-frontend
 npm install
-npm start
+npm run dev
 ```
 
-Frontend runs at: `http://localhost:3000`
-
-## 🔑 TMDb API Setup (for posters)
-
-1. Sign up at https://www.themoviedb.org
-2. Go to [API settings](https://www.themoviedb.org/settings/api)
-3. Copy your **API key (v3 auth)**  
-4. In `recommender_model.py`, set:
-
-```python
-TMDB_API_KEY = "your_api_key_here"
-```
-
-## 🔁 Endpoints (Backend)
-
-| Method | Endpoint                 | Description                      |
-|--------|--------------------------|----------------------------------|
-| `GET`  | `/recommend/{user_id}`   | Get top movie recommendations   |
-| `POST` | `/swipe/`                | Save like/dislike for a movie   |
-| `GET`  | `/swipe-history`         | Get history for a user          |
-| `DELETE` | `/reset-history/{user_id}` | Reset user swipe history     |
-
-## 🖼 Sample Movie Object Returned
-
-```json
-{
-  "title": "The Matrix",
-  "genre": "Action Sci-Fi",
-  "year": "1999",
-  "poster": "https://image.tmdb.org/t/p/w500/abcd1234.jpg",
-  "predicted_rating": 4.76
-}
-```
-
-## 📌 Notes
-
-- Recommendation logic is in `recommender_model.py`
-- Poster fetching is cached in `poster_cache` for speed
-- Swipe data is stored in `swipes.json` (consider switching to a database for production)
-
-## 📸 Demo
-
-> Coming soon: video/gif demo link or screenshots
-
-## 📚 Credits
-
-- MovieLens dataset: https://grouplens.org/datasets/movielens/
-- TMDb API: https://www.themoviedb.org/
-- Surprise SVD++: https://surpriselib.com/
-
-## 📄 License
-
-MIT License.  
-Use for educational and personal projects.
-
-Awesome! Here's everything you need to **document and present your `analysis_and_report.py` module** professionally — perfect for your project submission or GitHub:
-
 ---
 
-## ✅ README Section for `analysis_and_report.py`
+## 📊 Analysis & Reporting
 
-You can **add this to your existing README.md**:
+Run this Python script to generate:
 
----
-
-### 📊 Analysis & Reporting Module
-
-The `analysis_and_report.py` script provides comprehensive model analysis and visual reporting for the recommender system. It complements the deployed app by documenting performance and insights using saved images and logs.
-
-#### 💡 Features:
-
-* **Data Visualization**: Heatmaps, distribution plots, and rating counts.
-* **Feature Analysis**: Correlation matrix and rating patterns.
-* **Model Building**: Uses both `SVD` and `KNNBasic` from `Surprise`.
-* **Hyperparameter Tuning**: Uses `GridSearchCV` to find optimal settings.
-* **Model Comparison**: Evaluates RMSE of different models on the same dataset.
-* **Reporting**: Saves visual plots and a `report.log` for offline reporting.
-
----
-
-#### 📁 Outputs Saved To:
-
-| Type           | Location                           |
-| -------------- | ---------------------------------- |
-| Visualizations | `outputs/*.png`                    |
-| Log File       | `outputs/report.log`               |
-| Tuning Results | Printed in terminal & saved in log |
-
----
-
-#### ▶️ To Run:
+* Data exploration plots
+* Feature importance
+* Model comparison (SVD, KNN)
+* Evaluation logs and images saved
 
 ```bash
 python analysis_and_report.py
 ```
 
-Ensure you have these dependencies installed:
-
-```bash
-pip install matplotlib seaborn scikit-learn scikit-surprise
-```
+Results saved in:
+`/report_images` and `/report_logs`
 
 ---
 
-## 🗂 Folder Structure (Example)
+## 🎯 Example APIs (Backend)
 
-```
-movie-recommender-backend/
-├── main.py
-├── recommender_model.py
-├── analysis_and_report.py   <-- 🔍 Analysis script
-├── outputs/                 <-- 📊 Visual charts and log files
-│   ├── rating_distribution.png
-│   ├── correlation_heatmap.png
-│   ├── svd_vs_knn_rmse.png
-│   └── report.log
-├── ml-latest-small/
-│   ├── ratings.csv
-│   ├── movies.csv
-│   └── tags.csv
-```
+| Endpoint                | Method | Purpose             |
+| ----------------------- | ------ | ------------------- |
+| `/recommend/{user_id}`  | GET    | Get recommendations |
+| `/swipe/`               | POST   | Save swipe          |
+| `/swipe-history`        | GET    | Fetch swipe history |
+| `/reset-history/{user}` | DELETE | Reset user history  |
 
 ---
 
-## 📄 Sample report.log (snippet)
+## 🖥️ Tech Stack
 
-```
---- FEATURE ANALYSIS ---
-Most rated movie: Forrest Gump (1994)
-User with most ratings: ID 414
-...
+| Frontend                         | Backend | ML / Recsys                         | Visualization       |
+| -------------------------------- | ------- | ----------------------------------- | ------------------- |
+| React + Tailwind + Framer Motion | FastAPI | Surprise SVD++, Scikit-Learn TF-IDF | Matplotlib, Seaborn |
 
---- MODEL COMPARISON ---
-SVD RMSE: 0.8734
-KNN RMSE: 0.9431
-Best model: SVD
-...
-```
+---
 
+## 💡 Future Improvements
+
+* User Authentication
+* Real Movie Posters from TMDb API
+* Enhanced collaborative model (Neural CF)
+* Cloud deployment (Render / Vercel)
+
+---
+
+## 👩‍💻 Made by Priyam Saxena , Kadambala Likhith , Sayan Mondal 
