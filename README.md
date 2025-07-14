@@ -7,7 +7,6 @@ An interactive Movie Recommendation System powered by **Content-Based Filtering 
 ## 📂 Project Structure
 
 ```
-A/
 ├── movie-recommender-backend/
 │   ├── ml-latest-small/       # Datasets (ratings, movies, tags)
 │   ├── main.py                # FastAPI Backend API
