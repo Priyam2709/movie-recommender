@@ -5,33 +5,60 @@ from surprise import SVDpp, Dataset, Reader
 from surprise.model_selection import train_test_split
 import requests
 
+
 # === TMDb Poster Setup ===
-TMDB_API_KEY = "9b5eea108360f410aa29d53ffe3a5ed9"  # Replace this with your actual API key
-poster_cache = {}
+# TMDB_API_KEY = "9b5eea108360f410aa29d53ffe3a5ed9"  # Replace this with your actual API key
+# poster_cache = {}
 
-def get_tmdb_poster(title):
-    if title in poster_cache:
-        return poster_cache[title]
+# def get_tmdb_poster(title):
+#     if title in poster_cache:
+#         return poster_cache[title]
 
+#     try:
+#         response = requests.get(
+#             "https://api.themoviedb.org/3/search/movie",
+#             params={"api_key": TMDB_API_KEY, "query": title},
+#         )
+#         data = response.json()
+#         results = data.get("results")
+#         if results:
+#             poster_path = results[0].get("poster_path")
+#             if poster_path:
+#                 full_url = f"https://image.tmdb.org/t/p/w500{poster_path}"
+#                 poster_cache[title] = full_url
+#                 return full_url
+#     except Exception as e:
+#         print(f"Error fetching poster for {title}: {e}")
+
+# === Load datasets ===
+ratings = pd.read_csv("ml-latest-small/ratings.csv")
+movies = pd.read_csv("ml-latest-small/movies.csv")
+tags = pd.read_csv("ml-latest-small/tags.csv")
+links = pd.read_csv("ml-latest-small/links.csv")
+links['imdbId'] = links['imdbId'].astype(str).str.zfill(7)  # ensure 7-digit IMDb ID
+
+# Merge IMDb ID into movies dataframe
+movies_with_links = pd.merge(movies, links[['movieId', 'imdbId']], on='movieId', how='left')
+
+OMDB_API_KEY = "8bf5ae80"
+
+def get_omdb_poster_by_imdb(imdb_id):
+    if pd.isna(imdb_id):
+        return None
+
+    imdb_id = str(int(imdb_id)).zfill(7)  # Ensure it's 7-digit like '0114709'
+    url = f"http://www.omdbapi.com/?apikey={OMDB_API_KEY}&i=tt{imdb_id}"
+    
     try:
-        response = requests.get(
-            "https://api.themoviedb.org/3/search/movie",
-            params={"api_key": TMDB_API_KEY, "query": title},
-        )
+        response = requests.get(url)
         data = response.json()
-        results = data.get("results")
-        if results:
-            poster_path = results[0].get("poster_path")
-            if poster_path:
-                full_url = f"https://image.tmdb.org/t/p/w500{poster_path}"
-                poster_cache[title] = full_url
-                return full_url
-    except Exception as e:
-        print(f"Error fetching poster for {title}: {e}")
+        return data.get("Poster") if data.get("Poster") != "N/A" else None
+    except:
+        return None
 
-    fallback = "https://via.placeholder.com/500x750?text=No+Poster"
-    poster_cache[title] = fallback
-    return fallback
+    # fallback = "https://via.placeholder.com/500x750?text=No+Poster"
+    # poster_cache[title] = fallback
+    # return fallback
 
 def extract_year(title):
     if '(' in title and ')' in title:
@@ -41,10 +68,7 @@ def extract_year(title):
             return "N/A"
     return "N/A"
 
-# === Load datasets ===
-ratings = pd.read_csv("ml-latest-small/ratings.csv")
-movies = pd.read_csv("ml-latest-small/movies.csv")
-tags = pd.read_csv("ml-latest-small/tags.csv")
+
 
 # === Combine metadata ===
 tag_data = tags.groupby('movieId')['tag'].apply(lambda x: ' '.join(x)).reset_index()
@@ -68,7 +92,7 @@ svd_model.fit(trainset)
 
 # === Expose global objects ===
 all_ratings = ratings
-all_movies = movies_with_tags
+all_movies = movies_with_links
 cosine_matrix = cosine_sim
 svdpp = svd_model
 
@@ -105,7 +129,7 @@ def rank_by_svdpp(user_id, movie_ids, svd_model, movies_df, top_n=10):
             'title': movie['title'],
             'genre': movie['genres'],
             'predicted_rating': round(est_rating, 2),
-            'poster': get_tmdb_poster(movie['title']),
+            'poster': get_omdb_poster_by_imdb(movie['imbdId']),
             'year': extract_year(movie['title'])
         })
 
