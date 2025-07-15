@@ -7,6 +7,8 @@ import random
 import pandas as pd
 from recommender_model import svdpp, all_ratings, all_movies, cosine_matrix, recommend, default_movies_df
 from fastapi.middleware.cors import CORSMiddleware
+from recommender_model import get_omdb_poster_by_imdb
+
 
 app = FastAPI()
 
@@ -97,7 +99,7 @@ def get_recommendations(user_id: int):
             "title": row['title'],
             "genre": row['genres'],
             "year": "N/A",
-            "poster": f"https://via.placeholder.com/500x750.png?text={row['title'].replace(' ', '+')}",
+            "poster": get_omdb_poster_by_imdb(row['imdbId']),
             "predicted_rating": round(pred, 2)
         })
 
