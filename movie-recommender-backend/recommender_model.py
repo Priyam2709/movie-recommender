@@ -40,7 +40,7 @@ links['imdbId'] = links['imdbId'].astype(str).str.zfill(7)  # ensure 7-digit IMD
 # Merge IMDb ID into movies dataframe
 movies_with_links = pd.merge(movies, links[['movieId', 'imdbId']], on='movieId', how='left')
 
-OMDB_API_KEY = "8bf5ae80"
+OMDB_API_KEY = "#paste your api key here"
 
 def get_omdb_poster_by_imdb(imdb_id):
     if pd.isna(imdb_id):
